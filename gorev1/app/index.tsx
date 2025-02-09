@@ -63,18 +63,6 @@ export default function HomeScreen() {
   const { data: searchResults, isLoading: searchLoading } =
     useSearchProductsQuery({ q: "Zara", limit: 20, page: 1 });
 
-  useEffect(() => {
-    if (products) {
-      console.log("Ürünler:", JSON.stringify(products, null, 2));
-    }
-    if (product) {
-      console.log("Ürün Detayı:", JSON.stringify(product, null, 2));
-    }
-    if (searchResults) {
-      console.log("Arama Sonuçları:", JSON.stringify(searchResults, null, 2));
-    }
-  }, [products, product, searchResults]);
-
   const renderProduct = ({ item }: { item: Product }) => (
     <TouchableOpacity
       style={styles.productCard}
