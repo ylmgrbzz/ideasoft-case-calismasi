@@ -19,24 +19,16 @@ export default function AddProductScreen() {
 
   const [productData, setProductData] = useState({
     name: "",
-    sku: "",
+    fullName: "",
     stockAmount: "",
     price1: "",
-    currency: {
-      id: 1,
-      label: "TL",
-    },
-    taxIncluded: 1 as 0 | 1,
-    tax: 18,
-    stockTypeLabel: "Piece" as const,
-    status: 1 as 0 | 1,
   });
 
   const handleSubmit = async () => {
     try {
       if (
         !productData.name ||
-        !productData.sku ||
+        !productData.fullName ||
         !productData.stockAmount ||
         !productData.price1
       ) {
@@ -44,11 +36,57 @@ export default function AddProductScreen() {
         return;
       }
 
-      await createProduct({
-        ...productData,
+      // Slug oluştur
+      const slug = productData.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      // Benzersiz SKU oluştur - timestamp ekleyerek benzersizliği artırıyoruz
+      const timestamp = new Date().getTime();
+      const randomStr = Math.random().toString(36).substring(7);
+      const sku = `${timestamp}-${randomStr}`;
+
+      const productToCreate = {
+        name: productData.name,
+        fullName: productData.fullName,
+        slug: slug,
+        sku: sku,
         stockAmount: Number(productData.stockAmount),
         price1: Number(productData.price1),
-      }).unwrap();
+        currency: {
+          id: 3,
+          label: "TL",
+          abbr: "TL",
+        },
+        discount: 0.0,
+        discountType: 1,
+        moneyOrderDiscount: 0.0,
+        buyingPrice: 0.0,
+        taxIncluded: 1,
+        tax: 20,
+        warranty: 24,
+        volumetricWeight: 0.0,
+        stockTypeLabel: "Piece",
+        customShippingDisabled: 1,
+        customShippingCost: 0.0,
+        hasGift: 0,
+        status: 1,
+        hasOption: 0,
+        installmentThreshold: "0",
+        categoryShowcaseStatus: 0,
+        categories: [
+          {
+            id: 490,
+            name: "Giyim",
+            sortOrder: 1,
+            tree: "Giyim",
+          },
+        ],
+      };
+
+      await createProduct(productToCreate).unwrap();
 
       Alert.alert("Başarılı", "Ürün başarıyla eklendi.", [
         {
@@ -100,14 +138,14 @@ export default function AddProductScreen() {
         </View>
 
         <View style={styles.inputContainer}>
-          <ThemedText style={styles.label}>SKU</ThemedText>
+          <ThemedText style={styles.label}>Tam Adı</ThemedText>
           <TextInput
             style={styles.input}
-            value={productData.sku}
+            value={productData.fullName}
             onChangeText={(text) =>
-              setProductData((prev) => ({ ...prev, sku: text }))
+              setProductData((prev) => ({ ...prev, fullName: text }))
             }
-            placeholder="Stok kodunu girin"
+            placeholder="Ürünün tam adını girin"
           />
         </View>
 
