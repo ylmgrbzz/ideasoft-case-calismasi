@@ -178,12 +178,7 @@ export default function ProductDetailScreen() {
                       `${product.stockAmount} ${product.stockTypeLabel}`
                     )}
                     {renderSpecification("KDV", `%${product.tax}`)}
-                    {renderSpecification(
-                      "Ağırlık",
-                      product.volumetricWeight > 0
-                        ? `${product.volumetricWeight} kg`
-                        : "-"
-                    )}
+
                     {renderSpecification(
                       "Eklenme Tarihi",
                       formatDate(product.createdAt)
