@@ -11,18 +11,32 @@ import {
 import { Stack, useRouter } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
-import { useCreateProductMutation } from "@/store/services/api";
+import {
+  useCreateProductMutation,
+  useGetCategoriesQuery,
+} from "@/store/services/api";
+import DropDownPicker from "react-native-dropdown-picker";
 
 export default function AddProductScreen() {
   const router = useRouter();
   const [createProduct, { isLoading }] = useCreateProductMutation();
+  const { data: categories, isLoading: categoriesLoading } =
+    useGetCategoriesQuery();
+  const [open, setOpen] = useState(false);
 
   const [productData, setProductData] = useState({
     name: "",
     fullName: "",
     stockAmount: "",
     price1: "",
+    selectedCategoryId: null,
   });
+
+  const categoryItems =
+    categories?.map((category) => ({
+      label: category.name,
+      value: category.id,
+    })) || [];
 
   const handleSubmit = async () => {
     try {
@@ -30,7 +44,8 @@ export default function AddProductScreen() {
         !productData.name ||
         !productData.fullName ||
         !productData.stockAmount ||
-        !productData.price1
+        !productData.price1 ||
+        !productData.selectedCategoryId
       ) {
         Alert.alert("Hata", "Lütfen tüm alanları doldurun.");
         return;
@@ -48,6 +63,11 @@ export default function AddProductScreen() {
       const randomStr = Math.random().toString(36).substring(7);
       const sku = `${timestamp}-${randomStr}`;
 
+      // Seçilen kategoriyi bul
+      const selectedCategory = categories?.find(
+        (cat) => cat.id === productData.selectedCategoryId
+      );
+
       const productToCreate = {
         name: productData.name,
         fullName: productData.fullName,
@@ -61,29 +81,41 @@ export default function AddProductScreen() {
           abbr: "TL",
         },
         discount: 0.0,
-        discountType: 1,
+        discountType: 1 as 0 | 1,
         moneyOrderDiscount: 0.0,
         buyingPrice: 0.0,
-        taxIncluded: 1,
+        taxIncluded: 1 as 0 | 1,
         tax: 20,
         warranty: 24,
         volumetricWeight: 0.0,
-        stockTypeLabel: "Piece",
-        customShippingDisabled: 1,
+        stockTypeLabel: "Piece" as
+          | "Piece"
+          | "cm"
+          | "Dozen"
+          | "gram"
+          | "kg"
+          | "Person"
+          | "Package"
+          | "metre"
+          | "m2"
+          | "pair",
+        customShippingDisabled: 1 as 0 | 1,
         customShippingCost: 0.0,
-        hasGift: 0,
-        status: 1,
-        hasOption: 0,
+        hasGift: 0 as 0 | 1,
+        status: 1 as 0 | 1,
+        hasOption: 0 as 0 | 1,
         installmentThreshold: "0",
         categoryShowcaseStatus: 0,
-        categories: [
-          {
-            id: 490,
-            name: "Giyim",
-            sortOrder: 1,
-            tree: "Giyim",
-          },
-        ],
+        categories: selectedCategory
+          ? [
+              {
+                id: selectedCategory.id,
+                name: selectedCategory.name,
+                sortOrder: selectedCategory.sortOrder,
+                tree: selectedCategory.name,
+              },
+            ]
+          : [],
       };
 
       await createProduct(productToCreate).unwrap();
@@ -149,6 +181,35 @@ export default function AddProductScreen() {
             placeholder="Ürünün tam adını girin"
             placeholderTextColor="#94a3b8"
           />
+        </View>
+
+        <View style={[styles.inputContainer, { zIndex: 1000 }]}>
+          <ThemedText style={styles.label}>Kategori</ThemedText>
+          {categoriesLoading ? (
+            <ActivityIndicator color="#4338ca" />
+          ) : (
+            <DropDownPicker
+              open={open}
+              value={productData.selectedCategoryId}
+              items={categoryItems}
+              setOpen={setOpen}
+              setValue={(callback) => {
+                if (typeof callback === "function") {
+                  const newValue = callback(productData.selectedCategoryId);
+                  setProductData((prev) => ({
+                    ...prev,
+                    selectedCategoryId: newValue,
+                  }));
+                }
+              }}
+              placeholder="Kategori seçin"
+              style={styles.dropdown}
+              dropDownContainerStyle={styles.dropdownContainer}
+              placeholderStyle={styles.dropdownPlaceholder}
+              listItemLabelStyle={styles.dropdownItem}
+              selectedItemLabelStyle={styles.dropdownSelectedItem}
+            />
+          )}
         </View>
 
         <View style={styles.inputContainer}>
@@ -228,6 +289,29 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     color: "#1e293b",
+  },
+  dropdown: {
+    backgroundColor: "#ffffff",
+    borderColor: "#e2e8f0",
+    borderRadius: 8,
+    height: 50,
+  },
+  dropdownContainer: {
+    backgroundColor: "#ffffff",
+    borderColor: "#e2e8f0",
+    borderRadius: 8,
+  },
+  dropdownPlaceholder: {
+    color: "#94a3b8",
+    fontSize: 16,
+  },
+  dropdownItem: {
+    color: "#1e293b",
+    fontSize: 16,
+  },
+  dropdownSelectedItem: {
+    color: "#1e293b",
+    fontWeight: "500",
   },
   submitButton: {
     backgroundColor: "#4338ca",
