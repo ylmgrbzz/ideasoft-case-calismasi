@@ -61,6 +61,20 @@ export default function SearchScreen() {
   );
 
   useEffect(() => {
+    if (!debouncedQuery) {
+      setProducts([]);
+    }
+  }, [debouncedQuery]);
+
+  const [localProducts, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    if (products) {
+      setProducts(products);
+    }
+  }, [products]);
+
+  useEffect(() => {
     StatusBar.setBarStyle("dark-content");
     if (Platform.OS === "android") {
       StatusBar.setBackgroundColor("#ffffff");
@@ -151,13 +165,13 @@ export default function SearchScreen() {
             </View>
           ) : (
             <FlatList
-              data={products}
+              data={localProducts}
               renderItem={renderProduct}
               keyExtractor={(item) => item.id.toString()}
               numColumns={2}
               contentContainerStyle={[
                 styles.productList,
-                !products?.length && styles.emptyList,
+                !localProducts?.length && styles.emptyList,
               ]}
               showsVerticalScrollIndicator={false}
               ListHeaderComponent={<View style={styles.listHeader} />}
