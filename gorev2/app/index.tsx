@@ -89,14 +89,14 @@ export default function HomeScreen() {
                 title="Ürünler"
                 description="Ürün listesi, ekleme, düzenleme ve silme işlemleri"
                 icon="package-variant-closed"
-                onPress={() => router.push("products")}
+                onPress={() => router.replace("./products")}
               />
 
               <MenuCard
                 title="Kategoriler"
                 description="Kategori listesi, ekleme, düzenleme ve silme işlemleri"
                 icon="shape"
-                onPress={() => router.push("categories")}
+                onPress={() => router.replace("./categories")}
               />
             </View>
           </ThemedView>
