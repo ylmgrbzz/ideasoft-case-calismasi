@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
+  Image,
 } from "react-native";
 import { Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -19,6 +20,25 @@ import {
 import { Product } from "@/types/product";
 import { useState, useCallback } from "react";
 import { useRouter } from "expo-router";
+
+const getProductImage = (productName: string) => {
+  switch (productName) {
+    case "Zara Sleeve T-Shirt":
+      return require("../assets/images/zaratshirt.jpg");
+    case "Nivea Nemlendirici":
+      return require("../assets/images/niveanemlendirici.jpg");
+    case "VESTEL Akıllı Saat":
+      return require("../assets/images/vestelakıllısaat.jpg");
+    case "PUMA Sneaker":
+      return require("../assets/images/pumasnekader.jpeg");
+    case "Apple iPhone 13":
+      return require("../assets/images/iphone13.jpg");
+    case "Zara Triko Kazak":
+      return require("../assets/images/zaratrikokazak.jpg");
+    default:
+      return require("../assets/images/zaratshirt.jpg");
+  }
+};
 
 export default function ProductsScreen() {
   const { data: products, isLoading, error, refetch } = useGetProductsQuery();
@@ -55,16 +75,13 @@ export default function ProductsScreen() {
 
   const renderItem = ({ item }: { item: Product }) => (
     <View style={styles.productCard}>
-      {item.images && item.images[0] && (
-        <View style={styles.imageContainer}>
-          <MaterialCommunityIcons
-            name="package-variant-closed"
-            size={32}
-            color="#4338ca"
-            style={styles.placeholderImage}
-          />
-        </View>
-      )}
+      <View style={styles.imageContainer}>
+        <Image
+          source={getProductImage(item.name)}
+          style={styles.productImage}
+          resizeMode="cover"
+        />
+      </View>
       <View style={styles.productInfo}>
         <View style={styles.productHeader}>
           <ThemedText style={styles.productName} numberOfLines={1}>
@@ -228,15 +245,15 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   imageContainer: {
-    width: 48,
-    height: 48,
+    width: 80,
+    height: 80,
     borderRadius: 8,
+    overflow: "hidden",
     backgroundColor: "#f1f5f9",
-    justifyContent: "center",
-    alignItems: "center",
   },
-  placeholderImage: {
-    opacity: 0.5,
+  productImage: {
+    width: "100%",
+    height: "100%",
   },
   productInfo: {
     flex: 1,
