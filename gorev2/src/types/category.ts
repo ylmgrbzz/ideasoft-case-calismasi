@@ -24,25 +24,37 @@ export interface Category {
   imageUrl: string | null;
   isCombine: 0 | 1;
   isSearchable: 0 | 1;
+  seoSetting: {
+    id: number;
+    context: string;
+    contextItemId: number;
+    jsonValue: Record<string, any>;
+    updatedAt: string;
+    createdAt: string;
+  } | null;
+  createdAt: string;
 }
 
 export interface CreateCategoryRequest {
   name: string;
   sortOrder: number;
   status: 0 | 1;
-  displayShowcaseContent: 0 | 1 | 2;
-  showcaseContentDisplayType: 1 | 2 | 3;
-  displayShowcaseFooterContent: 0 | 1 | 2;
-  showcaseFooterContentDisplayType: 1 | 2 | 3;
-  isCombine: 0 | 1;
-  slug?: string;
+  distributor?: string;
+  distributorCode?: string;
   percent?: number;
   imageFile?: string;
+  displayShowcaseContent: 0 | 1 | 2;
   showcaseContent?: string;
+  showcaseContentDisplayType: 1 | 2 | 3;
+  displayShowcaseFooterContent: 0 | 1 | 2;
   showcaseFooterContent?: string;
+  showcaseFooterContentDisplayType: 1 | 2 | 3;
   pageTitle?: string;
   metaDescription?: string;
   metaKeywords?: string;
   canonicalUrl?: string;
   parent?: number;
+  isCombine: 0 | 1;
+  isSearchable: 0 | 1;
+  attachment?: string;
 }
