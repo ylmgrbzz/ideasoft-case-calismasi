@@ -255,6 +255,7 @@ const styles = StyleSheet.create({
   },
   productList: {
     padding: CARD_MARGIN,
+    flexGrow: 0,
   },
   columnWrapper: {
     justifyContent: "space-between",
@@ -307,10 +308,10 @@ const styles = StyleSheet.create({
     color: "#6200ee",
   },
   emptyContainer: {
-    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 100,
+    justifyContent: "flex-start",
+    paddingTop: 80,
+    flex: 0,
   },
   noResults: {
     fontSize: 16,
@@ -325,6 +326,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   emptyList: {
-    flexGrow: 1,
+    flexGrow: 0,
+    height: "auto",
   },
 });
