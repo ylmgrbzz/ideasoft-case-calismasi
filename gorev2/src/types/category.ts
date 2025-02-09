@@ -24,8 +24,6 @@ export interface Category {
   imageUrl: string | null;
   isCombine: 0 | 1;
   isSearchable: 0 | 1;
-  seoSetting: any | null;
-  createdAt: string;
 }
 
 export interface CreateCategoryRequest {
