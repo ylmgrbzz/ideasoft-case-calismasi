@@ -31,14 +31,16 @@ export const api = createApi({
       Product[],
       { search: string } & Omit<ProductQueryParams, "q">
     >({
-      query: (params) => ({
-        url: "/products",
-        params: {
-          ...params,
-          limit: params.limit || 20,
-          page: params.page || 1,
-        },
-      }),
+      query: (params) => {
+        const searchParams = new URLSearchParams();
+        searchParams.append("q[name]", params.search);
+        searchParams.append("limit", params.limit?.toString() || "20");
+        searchParams.append("page", params.page?.toString() || "1");
+
+        return {
+          url: `/products?${searchParams.toString()}`,
+        };
+      },
     }),
   }),
 });
