@@ -24,7 +24,7 @@ export const api = createApi({
         },
       }),
     }),
-    getProductById: builder.query<Product, string>({
+    getProductById: builder.query<Product, number>({
       query: (id) => `/products/${id}`,
     }),
     searchProducts: builder.query<

@@ -1,7 +1,15 @@
 export interface Currency {
   id: number;
   label: string;
+  buyingPrice: number;
+  sellingPrice: number;
   abbr: string;
+  updatedAt: string;
+  status: number;
+  permissionStatus: number;
+  isPrimary: number;
+  isEffective: number;
+  isExtra: number;
 }
 
 export interface ProductImage {
@@ -11,18 +19,80 @@ export interface ProductImage {
   directoryName: string;
   revision: string;
   sortOrder: number;
+  attachment?: string;
 }
 
-export interface ProductCategory {
+export interface Brand {
   id: number;
   name: string;
+  slug: string;
+  sortOrder: number;
+  status: number;
   distributorCode: string;
+  distributor: string;
+  imageFile: string;
+  showcaseContent: string;
+  displayShowcaseContent: number;
+  showcaseFooterContent: string;
+  displayShowcaseFooterContent: number;
+  metaKeywords: string;
+  metaDescription: string;
+  canonicalUrl: string;
+  pageTitle: string;
+  attachment?: string;
+  isSearchable: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  sortOrder: number;
+  status: number;
+  distributorCode: string;
+  percent: number;
+  imageFile: string;
+  distributor: string;
+  displayShowcaseContent: number;
+  showcaseContent: string;
+  showcaseContentDisplayType: number;
+  displayShowcaseFooterContent: number;
+  showcaseFooterContent: string;
+  showcaseFooterContentDisplayType: number;
+  hasChildren: number;
+  metaKeywords: string;
+  metaDescription: string;
+  canonicalUrl: string;
+  pageTitle: string;
+  leftIndex: number;
+  level: number;
+  rightIndex: number;
+  root: number;
+  isCombine: number;
+  isSearchable: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ProductToCategory {
   id: number;
   sortOrder: number | null;
-  category: ProductCategory;
+  category: Category;
+}
+
+export interface ProductDetail {
+  id: number;
+  sku: string;
+  details: string;
+  extraDetails?: string;
+}
+
+export interface ProductExtraField {
+  id: number;
+  varKey: string;
+  varValue: string;
 }
 
 export interface Product {
@@ -66,15 +136,15 @@ export interface Product {
   campaignedSortOrder: number | null;
   newSortOrder: number | null;
   discountedSortOrder: number | null;
-  brand: string | null;
+  brand: Brand | null;
   currency: Currency;
-  parent: string | null;
-  countdown: string | null;
+  parent: Partial<Product> | null;
+  countdown: any | null;
   prices: any[];
   images: ProductImage[];
-  details: any[];
+  details: ProductDetail[];
   productToCategories: ProductToCategory[];
-  productExtraFields: any[];
+  productExtraFields: ProductExtraField[];
 }
 
 export interface ProductQueryParams {
