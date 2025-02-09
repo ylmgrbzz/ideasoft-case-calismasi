@@ -130,7 +130,16 @@ export default function CategoriesScreen() {
       <View style={styles.actionButtons}>
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}
-          onPress={() => {}}
+          onPress={() =>
+            router.push({
+              pathname: "/add-category",
+              params: {
+                isEdited: "true",
+                categoryId: item.id,
+                categoryName: item.name,
+              },
+            })
+          }
         >
           <MaterialCommunityIcons name="pencil" size={20} color="#4338ca" />
         </TouchableOpacity>

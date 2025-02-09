@@ -8,15 +8,26 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
-import { useCreateCategoryMutation } from "@/store/services/api";
+import {
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+} from "@/store/services/api";
 
 export default function AddCategoryScreen() {
   const router = useRouter();
-  const [createCategory, { isLoading }] = useCreateCategoryMutation();
-  const [name, setName] = useState("");
+  const params = useLocalSearchParams();
+  const isEdited = params.isEdited === "true";
+  const categoryId = params.categoryId ? Number(params.categoryId) : null;
+
+  const [createCategory, { isLoading: isCreating }] =
+    useCreateCategoryMutation();
+  const [updateCategory, { isLoading: isUpdating }] =
+    useUpdateCategoryMutation();
+
+  const [name, setName] = useState((params.categoryName as string) || "");
 
   const handleSubmit = async () => {
     try {
@@ -25,37 +36,88 @@ export default function AddCategoryScreen() {
         return;
       }
 
-      // Slug oluştur
-      const slug = name
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-|-$/g, "");
+      if (isEdited && categoryId) {
+        await updateCategory({
+          id: categoryId,
+          category: {
+            id: categoryId,
+            name,
+            slug: name
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, "-")
+              .replace(/-+/g, "-")
+              .replace(/^-|-$/g, ""),
+            sortOrder: 1,
+            status: 1 as 0 | 1,
+            displayShowcaseContent: 0 as 0 | 1 | 2,
+            showcaseContentDisplayType: 2 as 1 | 2 | 3,
+            displayShowcaseFooterContent: 0 as 0 | 1 | 2,
+            showcaseFooterContentDisplayType: 1 as 1 | 2 | 3,
+            hasChildren: 0 as 0 | 1,
+            isCombine: 1 as 0 | 1,
+            isSearchable: 1 as 0 | 1,
+            distributor: null,
+            distributorCode: null,
+            percent: 0,
+            imageFile: null,
+            showcaseContent: null,
+            showcaseFooterContent: null,
+            pageTitle: null,
+            metaDescription: null,
+            metaKeywords: null,
+            canonicalUrl: null,
+            parent: null,
+            children: [],
+            imageUrl: null,
+            seoSetting: null,
+            createdAt: new Date().toISOString(),
+          },
+        }).unwrap();
 
-      const categoryToCreate = {
-        name,
-        slug,
-        sortOrder: 1,
-        status: 1 as 0 | 1,
-        displayShowcaseContent: 0 as 0 | 1 | 2,
-        showcaseContentDisplayType: 2 as 1 | 2 | 3,
-        displayShowcaseFooterContent: 0 as 0 | 1 | 2,
-        showcaseFooterContentDisplayType: 1 as 1 | 2 | 3,
-        hasChildren: 0 as 0 | 1,
-        isCombine: 1 as 0 | 1,
-        isSearchable: 1 as 0 | 1,
-      };
+        Alert.alert("Başarılı", "Kategori başarıyla güncellendi.", [
+          {
+            text: "Tamam",
+            onPress: () => router.back(),
+          },
+        ]);
+      } else {
+        // Slug oluştur
+        const slug = name
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
 
-      await createCategory(categoryToCreate).unwrap();
+        const categoryToCreate = {
+          name,
+          slug,
+          sortOrder: 1,
+          status: 1 as 0 | 1,
+          displayShowcaseContent: 0 as 0 | 1 | 2,
+          showcaseContentDisplayType: 2 as 1 | 2 | 3,
+          displayShowcaseFooterContent: 0 as 0 | 1 | 2,
+          showcaseFooterContentDisplayType: 1 as 1 | 2 | 3,
+          hasChildren: 0 as 0 | 1,
+          isCombine: 1 as 0 | 1,
+          isSearchable: 1 as 0 | 1,
+        };
 
-      Alert.alert("Başarılı", "Kategori başarıyla eklendi.", [
-        {
-          text: "Tamam",
-          onPress: () => router.back(),
-        },
-      ]);
+        await createCategory(categoryToCreate).unwrap();
+
+        Alert.alert("Başarılı", "Kategori başarıyla eklendi.", [
+          {
+            text: "Tamam",
+            onPress: () => router.back(),
+          },
+        ]);
+      }
     } catch (error) {
-      Alert.alert("Hata", "Kategori eklenirken bir hata oluştu.");
+      Alert.alert(
+        "Hata",
+        isEdited
+          ? "Kategori güncellenirken bir hata oluştu."
+          : "Kategori eklenirken bir hata oluştu."
+      );
     }
   };
 
@@ -63,7 +125,7 @@ export default function AddCategoryScreen() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          headerTitle: "Kategori Ekle",
+          headerTitle: isEdited ? "Kategori Düzenle" : "Kategori Ekle",
           headerTitleStyle: styles.headerTitle,
           headerShadowVisible: false,
           headerStyle: {
@@ -101,15 +163,18 @@ export default function AddCategoryScreen() {
           </View>
 
           <TouchableOpacity
-            style={[styles.submitButton, isLoading && styles.disabledButton]}
+            style={[
+              styles.submitButton,
+              (isCreating || isUpdating) && styles.disabledButton,
+            ]}
             onPress={handleSubmit}
-            disabled={isLoading}
+            disabled={isCreating || isUpdating}
           >
-            {isLoading ? (
+            {isCreating || isUpdating ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
               <ThemedText style={styles.submitButtonText}>
-                Kategori Ekle
+                {isEdited ? "Kategori Güncelle" : "Kategori Ekle"}
               </ThemedText>
             )}
           </TouchableOpacity>
