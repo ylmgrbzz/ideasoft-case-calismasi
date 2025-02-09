@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
+  Image,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -18,6 +19,21 @@ import {
 } from "@/store/services/api";
 import { Category } from "@/types/category";
 import { useState, useCallback } from "react";
+
+const getCategoryImage = (categoryName: string) => {
+  switch (categoryName) {
+    case "Giyim":
+      return require("../assets/images/zaratshirt.jpg");
+    case "Kozmetik":
+      return require("../assets/images/vestelakıllısaat.jpg");
+    case "Teknoloji":
+      return require("../assets/images/iphone13.jpg");
+    case "Ayakkabi":
+      return require("../assets/images/pumasnekader.jpeg");
+    default:
+      return require("../assets/images/pumasnekader.jpeg");
+  }
+};
 
 export default function CategoriesScreen() {
   const {
@@ -60,11 +76,10 @@ export default function CategoriesScreen() {
   const renderItem = ({ item }: { item: Category }) => (
     <View style={styles.categoryCard}>
       <View style={styles.categoryIcon}>
-        <MaterialCommunityIcons
-          name="shape"
-          size={24}
-          color="#4338ca"
-          style={styles.icon}
+        <Image
+          source={getCategoryImage(item.name)}
+          style={styles.categoryImage}
+          resizeMode="cover"
         />
       </View>
       <View style={styles.categoryInfo}>
@@ -235,15 +250,15 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   categoryIcon: {
-    width: 48,
-    height: 48,
+    width: 80,
+    height: 80,
     borderRadius: 8,
-    backgroundColor: "#eef2ff",
-    justifyContent: "center",
-    alignItems: "center",
+    overflow: "hidden",
+    backgroundColor: "#f1f5f9",
   },
-  icon: {
-    opacity: 0.8,
+  categoryImage: {
+    width: "100%",
+    height: "100%",
   },
   categoryInfo: {
     flex: 1,
