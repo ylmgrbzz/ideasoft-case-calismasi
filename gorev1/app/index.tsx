@@ -21,6 +21,25 @@ import { router } from "expo-router";
 import { Product } from "../src/store/types/product";
 import { Ionicons } from "@expo/vector-icons";
 
+const getProductImage = (productName: string) => {
+  switch (productName) {
+    case "Zara Sleeve T-Shirt":
+      return require("../assets/images/zaratshirt.jpg");
+    case "Nivea Nemlendirici":
+      return require("../assets/images/niveanemlendirici.jpg");
+    case "VESTEL Akıllı Saat":
+      return require("../assets/images/vestelakıllısaat.jpg");
+    case "PUMA Sneaker":
+      return require("../assets/images/pumasnekader.jpeg");
+    case "Apple iPhone 13":
+      return require("../assets/images/iphone13.jpg");
+    case "Zara Triko Kazak":
+      return require("../assets/images/zaratrikokazak.jpg");
+    default:
+      return require("../assets/images/zaratshirt.jpg");
+  }
+};
+
 export default function HomeScreen() {
   const { data: products, isLoading: productsLoading } = useGetProductsQuery({
     limit: 20,
@@ -49,7 +68,7 @@ export default function HomeScreen() {
       onPress={() => router.push(`/product/${item.id}` as any)}
     >
       <Image
-        source={{ uri: item.images[0]?.filename }}
+        source={getProductImage(item.name)}
         style={styles.productImage}
         resizeMode="cover"
       />
