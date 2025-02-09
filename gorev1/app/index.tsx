@@ -4,6 +4,10 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  SafeAreaView,
+  View,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -15,6 +19,7 @@ import {
 } from "../src/store/services/api";
 import { router } from "expo-router";
 import { Product } from "../src/store/types/product";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const { data: products, isLoading: productsLoading } = useGetProductsQuery({
@@ -59,63 +64,106 @@ export default function HomeScreen() {
 
   if (productsLoading || productLoading || searchLoading) {
     return (
-      <ThemedView style={styles.container}>
-        <ActivityIndicator size="large" />
-      </ThemedView>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <ThemedText style={styles.headerTitle}>İdeaSoft Store</ThemedText>
+          <TouchableOpacity onPress={() => router.push("/search")}>
+            <Ionicons name="search" size={24} color="#333" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#e91e63" />
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <ThemedText style={styles.headerTitle}>İdeaSoft Store</ThemedText>
+        <TouchableOpacity onPress={() => router.push("/search")}>
+          <Ionicons name="search" size={24} color="#333" />
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={products}
         renderItem={renderProduct}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
         contentContainerStyle={styles.productList}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={<View style={styles.listHeader} />}
       />
-    </ThemedView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f5f5f5",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#333",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   productList: {
-    padding: 10,
+    padding: 8,
+  },
+  listHeader: {
+    height: 8,
   },
   productCard: {
     flex: 1,
-    margin: 5,
+    margin: 8,
     backgroundColor: "#fff",
-    borderRadius: 8,
+    borderRadius: 12,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.1,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
+    overflow: "hidden",
   },
   productImage: {
     width: "100%",
-    height: 150,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    height: 180,
+    backgroundColor: "#f9f9f9",
   },
   productInfo: {
-    padding: 10,
+    padding: 12,
+    backgroundColor: "#fff",
   },
   productName: {
     fontSize: 14,
     fontWeight: "500",
-    marginBottom: 5,
+    marginBottom: 6,
+    color: "#333",
   },
   productPrice: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
     color: "#e91e63",
   },
 });
