@@ -189,7 +189,10 @@ export default function ProductsScreen() {
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity style={styles.addButton} onPress={() => {}}>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => router.push("/add-product")}
+            >
               <MaterialCommunityIcons name="plus" size={24} color="#ffffff" />
             </TouchableOpacity>
           ),
