@@ -63,12 +63,14 @@ export default function HomeScreen() {
       <Stack.Screen
         options={{
           headerShown: false,
-          statusBarStyle: "dark",
-          statusBarTranslucent: true,
         }}
       />
       <View style={styles.container}>
-        <StatusBar barStyle="dark-content" />
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="transparent"
+          translucent
+        />
         <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
           <ThemedView style={[styles.container, { backgroundColor }]}>
             <View style={styles.headerContainer}>
