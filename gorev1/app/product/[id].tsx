@@ -50,6 +50,25 @@ export default function ProductDetailScreen() {
     }
   }, []);
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("tr-TR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const renderSpecification = (label: string, value: any) => {
+    if (!value) return null;
+    return (
+      <View style={styles.specRow}>
+        <ThemedText style={styles.specLabel}>{label}</ThemedText>
+        <ThemedText style={styles.specValue}>{value}</ThemedText>
+      </View>
+    );
+  };
+
   return (
     <>
       <Stack.Screen
@@ -91,31 +110,120 @@ export default function ProductDetailScreen() {
                   resizeMode="cover"
                 />
               </View>
-              <ThemedView style={styles.contentContainer}>
-                <ThemedText style={styles.productName}>
-                  {product.name}
-                </ThemedText>
-                <ThemedText style={styles.price}>
-                  {product.price1} TL
-                </ThemedText>
 
-                {product.brand && (
-                  <ThemedText style={styles.brand}>
-                    Marka: {product.brand.name}
+              <View style={styles.contentContainer}>
+                {/* Ürün Başlık ve Fiyat Bölümü */}
+                <View style={styles.headerSection}>
+                  <ThemedText style={styles.productName}>
+                    {product.name}
                   </ThemedText>
+                  <ThemedText style={styles.fullName}>
+                    {product.fullName}
+                  </ThemedText>
+                  <View style={styles.priceContainer}>
+                    <ThemedText style={styles.price}>
+                      {product.price1.toFixed(2)} {product.currency.label}
+                    </ThemedText>
+                    {product.discount > 0 && (
+                      <View style={styles.discountBadge}>
+                        <ThemedText style={styles.discountText}>
+                          %{product.discount} İndirim
+                        </ThemedText>
+                      </View>
+                    )}
+                  </View>
+                </View>
+
+                {/* Stok ve Kategori Bilgisi */}
+                <View style={styles.section}>
+                  <View style={styles.stockInfo}>
+                    <Ionicons
+                      name={
+                        product.stockAmount > 0
+                          ? "checkmark-circle"
+                          : "close-circle"
+                      }
+                      size={20}
+                      color={product.stockAmount > 0 ? "#4CAF50" : "#F44336"}
+                    />
+                    <ThemedText
+                      style={[
+                        styles.stockText,
+                        {
+                          color:
+                            product.stockAmount > 0 ? "#4CAF50" : "#F44336",
+                        },
+                      ]}
+                    >
+                      {product.stockAmount > 0 ? "Stokta var" : "Stokta yok"}
+                    </ThemedText>
+                  </View>
+                  {product.productToCategories?.map((cat) => (
+                    <View key={cat.id} style={styles.categoryBadge}>
+                      <ThemedText style={styles.categoryText}>
+                        {cat.category.name}
+                      </ThemedText>
+                    </View>
+                  ))}
+                </View>
+
+                {/* Ürün Detayları */}
+                <View style={styles.section}>
+                  <ThemedText style={styles.sectionTitle}>
+                    Ürün Özellikleri
+                  </ThemedText>
+                  <View style={styles.specificationContainer}>
+                    {renderSpecification("SKU", product.sku)}
+                    {renderSpecification("Barkod", product.barcode)}
+                    {renderSpecification("Garanti", `${product.warranty} Ay`)}
+                    {renderSpecification(
+                      "Stok Miktarı",
+                      `${product.stockAmount} ${product.stockTypeLabel}`
+                    )}
+                    {renderSpecification("KDV", `%${product.tax}`)}
+                    {renderSpecification(
+                      "Ağırlık",
+                      product.volumetricWeight > 0
+                        ? `${product.volumetricWeight} kg`
+                        : "-"
+                    )}
+                    {renderSpecification(
+                      "Eklenme Tarihi",
+                      formatDate(product.createdAt)
+                    )}
+                    {renderSpecification(
+                      "Güncellenme Tarihi",
+                      formatDate(product.updatedAt)
+                    )}
+                  </View>
+                </View>
+
+                {/* Kargo Bilgisi */}
+                <View style={styles.section}>
+                  <View style={styles.shippingInfo}>
+                    <Ionicons name="car-outline" size={24} color="#666" />
+                    <ThemedText style={styles.shippingText}>
+                      {product.customShippingDisabled
+                        ? "Standart Kargo"
+                        : `Özel Kargo Ücreti: ${product.customShippingCost} TL`}
+                    </ThemedText>
+                  </View>
+                </View>
+
+                {/* Ürün Açıklamaları */}
+                {product.details && product.details.length > 0 && (
+                  <View style={styles.section}>
+                    <ThemedText style={styles.sectionTitle}>
+                      Ürün Açıklaması
+                    </ThemedText>
+                    {product.details.map((detail) => (
+                      <ThemedText key={detail.id} style={styles.description}>
+                        {detail.details}
+                      </ThemedText>
+                    ))}
+                  </View>
                 )}
-
-                <ThemedText style={styles.stock}>
-                  Stok Durumu:{" "}
-                  {product.stockAmount > 0 ? "Stokta var" : "Stokta yok"}
-                </ThemedText>
-
-                {product.details.map((detail) => (
-                  <ThemedText key={detail.id} style={styles.description}>
-                    {detail.details}
-                  </ThemedText>
-                ))}
-              </ThemedView>
+              </View>
             </ScrollView>
           )}
         </SafeAreaView>
@@ -192,6 +300,115 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  headerSection: {
+    marginBottom: 20,
+  },
+  fullName: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 8,
+  },
+  priceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  discountBadge: {
+    backgroundColor: "#FFE0E0",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginLeft: 12,
+  },
+  discountText: {
+    color: "#E41E31",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  section: {
+    marginBottom: 24,
+    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1a1a1a",
+    marginBottom: 16,
+  },
+  stockInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  stockText: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginLeft: 8,
+  },
+  categoryBadge: {
+    backgroundColor: "#E8F0FE",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginRight: 8,
+    marginTop: 8,
+  },
+  categoryText: {
+    color: "#1967D2",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  specificationContainer: {
+    backgroundColor: "#FAFAFA",
+    borderRadius: 8,
+    padding: 12,
+  },
+  specRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEEEEE",
+  },
+  specLabel: {
+    fontSize: 14,
+    color: "#666",
+    flex: 1,
+  },
+  specValue: {
+    fontSize: 14,
+    color: "#333",
+    fontWeight: "500",
+    flex: 2,
+    textAlign: "right",
+  },
+  shippingInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+    padding: 12,
+    borderRadius: 8,
+  },
+  shippingText: {
+    marginLeft: 12,
+    fontSize: 14,
+    color: "#666",
+  },
+  description: {
+    fontSize: 15,
+    lineHeight: 24,
+    color: "#444",
+  },
   productName: {
     fontSize: 24,
     fontWeight: "600",
@@ -204,22 +421,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#6200ee",
     marginBottom: 20,
-  },
-  brand: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 12,
-  },
-  stock: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 20,
-  },
-  description: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: "#444",
-    marginBottom: 12,
   },
   errorText: {
     fontSize: 18,
