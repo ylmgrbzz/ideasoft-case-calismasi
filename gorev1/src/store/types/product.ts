@@ -95,6 +95,20 @@ export interface ProductExtraField {
   varValue: string;
 }
 
+export interface Countdown {
+  id: number;
+  startDate: string;
+  endDate: string;
+  expireDate: string;
+  useCountDown: number;
+}
+
+export interface Price {
+  id: number;
+  value: number;
+  type: number;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -139,8 +153,8 @@ export interface Product {
   brand: Brand | null;
   currency: Currency;
   parent: Partial<Product> | null;
-  countdown: any | null;
-  prices: any[];
+  countdown: Countdown | null;
+  prices: Price[];
   images: ProductImage[];
   details: ProductDetail[];
   productToCategories: ProductToCategory[];
