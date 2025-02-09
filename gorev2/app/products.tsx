@@ -147,7 +147,7 @@ export default function ProductsScreen() {
           headerLeft: () => (
             <TouchableOpacity
               style={styles.backButton}
-              onPress={() => router.back()}
+              onPress={() => router.replace("/")}
             >
               <MaterialCommunityIcons
                 name="arrow-left"
