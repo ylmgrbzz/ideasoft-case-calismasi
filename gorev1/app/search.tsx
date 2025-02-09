@@ -138,7 +138,6 @@ export default function SearchScreen() {
                 value={searchQuery}
                 onChangeText={handleSearch}
                 placeholderTextColor="#666"
-                autoFocus
                 returnKeyType="search"
               />
               {searchQuery ? (
