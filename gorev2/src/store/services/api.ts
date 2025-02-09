@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Category, CreateCategoryRequest } from "@/types/category";
+import { Product, CreateProductRequest } from "@/types/product";
 
 const BASE_URL = "https://testcase.myideasoft.com/admin-api";
 const TOKEN = "AX5FTZ7UBAABUDT6XYYPW7LX";
@@ -13,7 +14,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Categories"],
+  tagTypes: ["Categories", "Products"],
   endpoints: (builder) => ({
     getCategories: builder.query<Category[], void>({
       query: () => "/categories",
@@ -53,6 +54,45 @@ export const api = createApi({
       }),
       invalidatesTags: ["Categories"],
     }),
+
+    getProducts: builder.query<Product[], void>({
+      query: () => "/products",
+      providesTags: ["Products"],
+    }),
+
+    getProduct: builder.query<Product, number>({
+      query: (id) => `/products/${id}`,
+      providesTags: (_result, _error, id) => [{ type: "Products", id }],
+    }),
+
+    createProduct: builder.mutation<Product, CreateProductRequest>({
+      query: (product) => ({
+        url: "/products",
+        method: "POST",
+        body: product,
+      }),
+      invalidatesTags: ["Products"],
+    }),
+
+    updateProduct: builder.mutation<
+      Product,
+      { id: number; product: CreateProductRequest }
+    >({
+      query: ({ id, product }) => ({
+        url: `/products/${id}`,
+        method: "PUT",
+        body: product,
+      }),
+      invalidatesTags: ["Products"],
+    }),
+
+    deleteProduct: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Products"],
+    }),
   }),
 });
 
@@ -62,4 +102,9 @@ export const {
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
   useUpdateCategoryMutation,
+  useGetProductsQuery,
+  useGetProductQuery,
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
 } = api;
