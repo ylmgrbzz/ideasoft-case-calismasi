@@ -112,7 +112,6 @@ export default function ProductDetailScreen() {
               </View>
 
               <View style={styles.contentContainer}>
-                {/* Ürün Başlık ve Fiyat Bölümü */}
                 <View style={styles.headerSection}>
                   <ThemedText style={styles.productName}>
                     {product.name}
@@ -134,7 +133,6 @@ export default function ProductDetailScreen() {
                   </View>
                 </View>
 
-                {/* Stok ve Kategori Bilgisi */}
                 <View style={styles.section}>
                   <View style={styles.stockInfo}>
                     <Ionicons
@@ -167,7 +165,6 @@ export default function ProductDetailScreen() {
                   ))}
                 </View>
 
-                {/* Ürün Detayları */}
                 <View style={styles.section}>
                   <ThemedText style={styles.sectionTitle}>
                     Ürün Özellikleri
@@ -198,7 +195,6 @@ export default function ProductDetailScreen() {
                   </View>
                 </View>
 
-                {/* Kargo Bilgisi */}
                 <View style={styles.section}>
                   <View style={styles.shippingInfo}>
                     <Ionicons name="car-outline" size={24} color="#666" />
@@ -210,7 +206,6 @@ export default function ProductDetailScreen() {
                   </View>
                 </View>
 
-                {/* Ürün Açıklamaları */}
                 {product.details && product.details.length > 0 && (
                   <View style={styles.section}>
                     <ThemedText style={styles.sectionTitle}>
