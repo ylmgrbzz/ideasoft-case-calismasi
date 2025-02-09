@@ -16,39 +16,33 @@ import { useCreateCategoryMutation } from "@/store/services/api";
 export default function AddCategoryScreen() {
   const router = useRouter();
   const [createCategory, { isLoading }] = useCreateCategoryMutation();
-
-  const [categoryData, setCategoryData] = useState({
-    name: "",
-    sortOrder: "0",
-  });
+  const [name, setName] = useState("");
 
   const handleSubmit = async () => {
     try {
-      if (!categoryData.name) {
+      if (!name) {
         Alert.alert("Hata", "Lütfen kategori adını girin.");
         return;
       }
 
       // Slug oluştur
-      const slug = categoryData.name
+      const slug = name
         .toLowerCase()
         .replace(/[^a-z0-9]/g, "-")
         .replace(/-+/g, "-")
         .replace(/^-|-$/g, "");
 
       const categoryToCreate = {
-        name: categoryData.name,
-        slug: slug,
-        sortOrder: Number(categoryData.sortOrder),
+        name,
+        slug,
+        sortOrder: 1,
         status: 1 as 0 | 1,
-        displayShowcaseContent: 1 as 0 | 1,
-        showcaseContentDisplayType: 1 as 1 | 2 | 3,
-        displayShowcaseFooterContent: 1 as 0 | 1,
-        showcaseContentId: null,
-        showcaseFooterContentId: null,
-        metaKeywords: "",
+        displayShowcaseContent: 0 as 0 | 1 | 2,
+        showcaseContentDisplayType: 2 as 1 | 2 | 3,
+        displayShowcaseFooterContent: 0 as 0 | 1 | 2,
         showcaseFooterContentDisplayType: 1 as 1 | 2 | 3,
-        isCombine: 0 as 0 | 1,
+        hasChildren: 0 as 0 | 1,
+        isCombine: 1 as 0 | 1,
         isSearchable: 1 as 0 | 1,
       };
 
@@ -99,25 +93,9 @@ export default function AddCategoryScreen() {
             <ThemedText style={styles.label}>Kategori Adı</ThemedText>
             <TextInput
               style={styles.input}
-              value={categoryData.name}
-              onChangeText={(text) =>
-                setCategoryData((prev) => ({ ...prev, name: text }))
-              }
+              value={name}
+              onChangeText={setName}
               placeholder="Kategori adını girin"
-              placeholderTextColor="#94a3b8"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <ThemedText style={styles.label}>Sıralama</ThemedText>
-            <TextInput
-              style={styles.input}
-              value={categoryData.sortOrder}
-              onChangeText={(text) =>
-                setCategoryData((prev) => ({ ...prev, sortOrder: text }))
-              }
-              keyboardType="numeric"
-              placeholder="Sıralama değerini girin"
               placeholderTextColor="#94a3b8"
             />
           </View>
