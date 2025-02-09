@@ -134,6 +134,7 @@ export default function AddProductScreen() {
               setProductData((prev) => ({ ...prev, name: text }))
             }
             placeholder="Ürün adını girin"
+            placeholderTextColor="#94a3b8"
           />
         </View>
 
@@ -146,6 +147,7 @@ export default function AddProductScreen() {
               setProductData((prev) => ({ ...prev, fullName: text }))
             }
             placeholder="Ürünün tam adını girin"
+            placeholderTextColor="#94a3b8"
           />
         </View>
 
@@ -159,6 +161,7 @@ export default function AddProductScreen() {
             }
             keyboardType="numeric"
             placeholder="Stok miktarını girin"
+            placeholderTextColor="#94a3b8"
           />
         </View>
 
@@ -172,6 +175,7 @@ export default function AddProductScreen() {
             }
             keyboardType="numeric"
             placeholder="Fiyat girin"
+            placeholderTextColor="#94a3b8"
           />
         </View>
 
