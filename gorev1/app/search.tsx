@@ -15,7 +15,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useSearchProductsQuery } from "../src/store/services/api";
 import { router, Stack } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Product } from "../src/store/types/product";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -44,9 +44,20 @@ const getProductImage = (productName: string) => {
 
 export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const { data: products, isLoading } = useSearchProductsQuery(
-    { q: searchQuery, limit: 20, page: 1 },
-    { skip: !searchQuery }
+    { search: debouncedQuery, limit: 20, page: 1 },
+    { skip: !debouncedQuery }
   );
 
   useEffect(() => {
@@ -55,6 +66,15 @@ export default function SearchScreen() {
       StatusBar.setBackgroundColor("#ffffff");
       StatusBar.setTranslucent(true);
     }
+  }, []);
+
+  const handleSearch = useCallback((text: string) => {
+    setSearchQuery(text);
+  }, []);
+
+  const clearSearch = useCallback(() => {
+    setSearchQuery("");
+    setDebouncedQuery("");
   }, []);
 
   const renderProduct = ({ item }: { item: Product }) => (
@@ -102,13 +122,15 @@ export default function SearchScreen() {
                 style={styles.searchInput}
                 placeholder="Ürün ara..."
                 value={searchQuery}
-                onChangeText={setSearchQuery}
+                onChangeText={handleSearch}
                 placeholderTextColor="#666"
+                autoFocus
+                returnKeyType="search"
               />
               {searchQuery ? (
                 <TouchableOpacity
                   style={styles.clearButton}
-                  onPress={() => setSearchQuery("")}
+                  onPress={clearSearch}
                 >
                   <Ionicons name="close-circle" size={20} color="#666" />
                 </TouchableOpacity>
@@ -133,22 +155,32 @@ export default function SearchScreen() {
               renderItem={renderProduct}
               keyExtractor={(item) => item.id.toString()}
               numColumns={2}
-              contentContainerStyle={styles.productList}
+              contentContainerStyle={[
+                styles.productList,
+                !products?.length && styles.emptyList,
+              ]}
               showsVerticalScrollIndicator={false}
               ListHeaderComponent={<View style={styles.listHeader} />}
               columnWrapperStyle={styles.columnWrapper}
               ListEmptyComponent={
-                searchQuery ? (
+                debouncedQuery ? (
                   <View style={styles.emptyContainer}>
                     <Ionicons name="search-outline" size={48} color="#666" />
                     <ThemedText style={styles.noResults}>
-                      "{searchQuery}" için sonuç bulunamadı
+                      "{debouncedQuery}" için sonuç bulunamadı
                     </ThemedText>
                     <ThemedText style={styles.noResultsSubtext}>
                       Farklı bir arama yapmayı deneyin
                     </ThemedText>
                   </View>
-                ) : null
+                ) : (
+                  <View style={styles.emptyContainer}>
+                    <Ionicons name="search-outline" size={48} color="#666" />
+                    <ThemedText style={styles.noResults}>
+                      Ürün aramak için yazın
+                    </ThemedText>
+                  </View>
+                )
               }
             />
           )}
@@ -278,5 +310,8 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 8,
     textAlign: "center",
+  },
+  emptyList: {
+    flexGrow: 1,
   },
 });

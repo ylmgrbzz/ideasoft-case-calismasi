@@ -29,7 +29,7 @@ export const api = createApi({
     }),
     searchProducts: builder.query<
       Product[],
-      { q: string } & ProductQueryParams
+      { search: string } & Omit<ProductQueryParams, "q">
     >({
       query: (params) => ({
         url: "/products",
