@@ -42,7 +42,7 @@ const getProductImage = (productName: string) => {
 
 export default function ProductsScreen() {
   const { data: products, isLoading, error, refetch } = useGetProductsQuery();
-  const [deleteProduct] = useDeleteProductMutation();
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 
@@ -64,8 +64,14 @@ export default function ProductsScreen() {
           onPress: async () => {
             try {
               await deleteProduct(id).unwrap();
+              Alert.alert("Başarılı", `"${name}" ürünü başarıyla silindi.`);
+              refetch(); // Listeyi yenile
             } catch (error) {
-              Alert.alert("Hata", "Ürün silinirken bir hata oluştu.");
+              console.error("Silme hatası:", error);
+              Alert.alert(
+                "Hata",
+                "Ürün silinirken bir hata oluştu. Lütfen tekrar deneyin."
+              );
             }
           },
         },
@@ -120,10 +126,19 @@ export default function ProductsScreen() {
 
       <View style={styles.actionButtons}>
         <TouchableOpacity
-          style={[styles.actionButton, styles.deleteButton]}
+          style={[
+            styles.actionButton,
+            styles.deleteButton,
+            isDeleting && styles.disabledButton,
+          ]}
           onPress={() => handleDeleteProduct(item.id, item.name)}
+          disabled={isDeleting}
         >
-          <MaterialCommunityIcons name="delete" size={20} color="#dc2626" />
+          <MaterialCommunityIcons
+            name="delete"
+            size={20}
+            color={isDeleting ? "#9ca3af" : "#dc2626"}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -378,5 +393,10 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
+  },
+  disabledButton: {
+    opacity: 0.5,
+    borderColor: "#9ca3af",
+    backgroundColor: "#f3f4f6",
   },
 });

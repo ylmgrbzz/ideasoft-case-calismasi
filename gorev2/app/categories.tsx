@@ -42,7 +42,8 @@ export default function CategoriesScreen() {
     error,
     refetch,
   } = useGetCategoriesQuery();
-  const [deleteCategory] = useDeleteCategoryMutation();
+  const [deleteCategory, { isLoading: isDeleting }] =
+    useDeleteCategoryMutation();
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 
@@ -64,8 +65,17 @@ export default function CategoriesScreen() {
           onPress: async () => {
             try {
               await deleteCategory(id).unwrap();
+              Alert.alert(
+                "Başarılı",
+                `"${name}" kategorisi başarıyla silindi.`
+              );
+              refetch(); // Listeyi yenile
             } catch (error) {
-              Alert.alert("Hata", "Kategori silinirken bir hata oluştu.");
+              console.error("Silme hatası:", error);
+              Alert.alert(
+                "Hata",
+                "Kategori silinirken bir hata oluştu. Lütfen tekrar deneyin."
+              );
             }
           },
         },
@@ -125,10 +135,19 @@ export default function CategoriesScreen() {
           <MaterialCommunityIcons name="pencil" size={20} color="#4338ca" />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionButton, styles.deleteButton]}
+          style={[
+            styles.actionButton,
+            styles.deleteButton,
+            isDeleting && styles.disabledButton,
+          ]}
           onPress={() => handleDeleteCategory(item.id, item.name)}
+          disabled={isDeleting}
         >
-          <MaterialCommunityIcons name="delete" size={20} color="#dc2626" />
+          <MaterialCommunityIcons
+            name="delete"
+            size={20}
+            color={isDeleting ? "#9ca3af" : "#dc2626"}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -378,5 +397,10 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
+  },
+  disabledButton: {
+    opacity: 0.5,
+    borderColor: "#9ca3af",
+    backgroundColor: "#f3f4f6",
   },
 });
