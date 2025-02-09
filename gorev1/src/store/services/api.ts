@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Product, ProductQueryParams } from "../types/product";
 
-// API base URL'ini burada tanımlıyoruz
 const BASE_URL = "https://testcase.myideasoft.com/api";
 const ACCESS_TOKEN = "AX5FTZ7UBAABUDT6XYYPW7LX";
 
@@ -44,7 +43,6 @@ export const api = createApi({
   }),
 });
 
-// Export hooks for usage in components
 export const {
   useGetProductsQuery,
   useGetProductByIdQuery,
