@@ -58,12 +58,10 @@ export default function AddProductScreen() {
         .replace(/-+/g, "-")
         .replace(/^-|-$/g, "");
 
-      // Benzersiz SKU oluştur - timestamp ekleyerek benzersizliği artırıyoruz
       const timestamp = new Date().getTime();
       const randomStr = Math.random().toString(36).substring(7);
       const sku = `${timestamp}-${randomStr}`;
 
-      // Seçilen kategoriyi bul
       const selectedCategory = categories?.find(
         (cat) => cat.id === productData.selectedCategoryId
       );
@@ -132,7 +130,7 @@ export default function AddProductScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Stack.Screen
         options={{
           headerTitle: "Ürün Ekle",
@@ -156,103 +154,112 @@ export default function AddProductScreen() {
         }}
       />
 
-      <View style={styles.form}>
-        <View style={styles.inputContainer}>
-          <ThemedText style={styles.label}>Ürün Adı</ThemedText>
-          <TextInput
-            style={styles.input}
-            value={productData.name}
-            onChangeText={(text) =>
-              setProductData((prev) => ({ ...prev, name: text }))
-            }
-            placeholder="Ürün adını girin"
-            placeholderTextColor="#94a3b8"
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <ThemedText style={styles.label}>Tam Adı</ThemedText>
-          <TextInput
-            style={styles.input}
-            value={productData.fullName}
-            onChangeText={(text) =>
-              setProductData((prev) => ({ ...prev, fullName: text }))
-            }
-            placeholder="Ürünün tam adını girin"
-            placeholderTextColor="#94a3b8"
-          />
-        </View>
-
-        <View style={[styles.inputContainer, { zIndex: 1000 }]}>
-          <ThemedText style={styles.label}>Kategori</ThemedText>
-          {categoriesLoading ? (
-            <ActivityIndicator color="#4338ca" />
-          ) : (
-            <DropDownPicker
-              open={open}
-              value={productData.selectedCategoryId}
-              items={categoryItems}
-              setOpen={setOpen}
-              setValue={(callback) => {
-                if (typeof callback === "function") {
-                  const newValue = callback(productData.selectedCategoryId);
-                  setProductData((prev) => ({
-                    ...prev,
-                    selectedCategoryId: newValue,
-                  }));
-                }
-              }}
-              placeholder="Kategori seçin"
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContainer}
-              placeholderStyle={styles.dropdownPlaceholder}
-              listItemLabelStyle={styles.dropdownItem}
-              selectedItemLabelStyle={styles.dropdownSelectedItem}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.form}>
+          <View style={[styles.inputContainer, { zIndex: 1 }]}>
+            <ThemedText style={styles.label}>Ürün Adı</ThemedText>
+            <TextInput
+              style={styles.input}
+              value={productData.name}
+              onChangeText={(text) =>
+                setProductData((prev) => ({ ...prev, name: text }))
+              }
+              placeholder="Ürün adını girin"
+              placeholderTextColor="#94a3b8"
             />
-          )}
-        </View>
+          </View>
 
-        <View style={styles.inputContainer}>
-          <ThemedText style={styles.label}>Stok Miktarı</ThemedText>
-          <TextInput
-            style={styles.input}
-            value={productData.stockAmount}
-            onChangeText={(text) =>
-              setProductData((prev) => ({ ...prev, stockAmount: text }))
-            }
-            keyboardType="numeric"
-            placeholder="Stok miktarını girin"
-            placeholderTextColor="#94a3b8"
-          />
-        </View>
+          <View style={[styles.inputContainer, { zIndex: 1 }]}>
+            <ThemedText style={styles.label}>Tam Adı</ThemedText>
+            <TextInput
+              style={styles.input}
+              value={productData.fullName}
+              onChangeText={(text) =>
+                setProductData((prev) => ({ ...prev, fullName: text }))
+              }
+              placeholder="Ürünün tam adını girin"
+              placeholderTextColor="#94a3b8"
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <ThemedText style={styles.label}>Fiyat (TL)</ThemedText>
-          <TextInput
-            style={styles.input}
-            value={productData.price1}
-            onChangeText={(text) =>
-              setProductData((prev) => ({ ...prev, price1: text }))
-            }
-            keyboardType="numeric"
-            placeholder="Fiyat girin"
-            placeholderTextColor="#94a3b8"
-          />
-        </View>
+          <View style={[styles.inputContainer, { zIndex: 2 }]}>
+            <ThemedText style={styles.label}>Kategori</ThemedText>
+            {categoriesLoading ? (
+              <ActivityIndicator color="#4338ca" />
+            ) : (
+              <DropDownPicker
+                open={open}
+                value={productData.selectedCategoryId}
+                items={categoryItems}
+                setOpen={setOpen}
+                setValue={(callback) => {
+                  if (typeof callback === "function") {
+                    const newValue = callback(productData.selectedCategoryId);
+                    setProductData((prev) => ({
+                      ...prev,
+                      selectedCategoryId: newValue,
+                    }));
+                  }
+                }}
+                placeholder="Kategori seçin"
+                style={styles.dropdown}
+                dropDownContainerStyle={styles.dropdownContainer}
+                placeholderStyle={styles.dropdownPlaceholder}
+                listItemLabelStyle={styles.dropdownItem}
+                selectedItemLabelStyle={styles.dropdownSelectedItem}
+                listMode="SCROLLVIEW"
+                scrollViewProps={{
+                  nestedScrollEnabled: true,
+                }}
+              />
+            )}
+          </View>
 
-        <TouchableOpacity
-          style={[styles.submitButton, isLoading && styles.disabledButton]}
-          onPress={handleSubmit}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <ThemedText style={styles.submitButtonText}>Ürün Ekle</ThemedText>
-          )}
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          <View style={[styles.inputContainer, { zIndex: 1 }]}>
+            <ThemedText style={styles.label}>Stok Miktarı</ThemedText>
+            <TextInput
+              style={styles.input}
+              value={productData.stockAmount}
+              onChangeText={(text) =>
+                setProductData((prev) => ({ ...prev, stockAmount: text }))
+              }
+              keyboardType="numeric"
+              placeholder="Stok miktarını girin"
+              placeholderTextColor="#94a3b8"
+            />
+          </View>
+
+          <View style={[styles.inputContainer, { zIndex: 1 }]}>
+            <ThemedText style={styles.label}>Fiyat (TL)</ThemedText>
+            <TextInput
+              style={styles.input}
+              value={productData.price1}
+              onChangeText={(text) =>
+                setProductData((prev) => ({ ...prev, price1: text }))
+              }
+              keyboardType="numeric"
+              placeholder="Fiyat girin"
+              placeholderTextColor="#94a3b8"
+            />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.submitButton, isLoading && styles.disabledButton]}
+            onPress={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <ThemedText style={styles.submitButtonText}>Ürün Ekle</ThemedText>
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -260,6 +267,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   headerTitle: {
     fontSize: 20,
