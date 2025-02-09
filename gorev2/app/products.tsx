@@ -101,12 +101,6 @@ export default function ProductsScreen() {
 
       <View style={styles.actionButtons}>
         <TouchableOpacity
-          style={[styles.actionButton, styles.editButton]}
-          onPress={() => {}}
-        >
-          <MaterialCommunityIcons name="pencil" size={20} color="#4338ca" />
-        </TouchableOpacity>
-        <TouchableOpacity
           style={[styles.actionButton, styles.deleteButton]}
           onPress={() => handleDeleteProduct(item.id, item.name)}
         >
