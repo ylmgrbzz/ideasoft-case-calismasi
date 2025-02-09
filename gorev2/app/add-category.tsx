@@ -81,7 +81,6 @@ export default function AddCategoryScreen() {
           },
         ]);
       } else {
-        // Slug oluştur
         const slug = name
           .toLowerCase()
           .replace(/[^a-z0-9]/g, "-")

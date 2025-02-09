@@ -69,9 +69,8 @@ export default function CategoriesScreen() {
                 "Başarılı",
                 `"${name}" kategorisi başarıyla silindi.`
               );
-              refetch(); // Listeyi yenile
+              refetch();
             } catch (error) {
-              console.error("Silme hatası:", error);
               Alert.alert(
                 "Hata",
                 "Kategori silinirken bir hata oluştu. Lütfen tekrar deneyin."
