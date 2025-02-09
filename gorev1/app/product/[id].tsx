@@ -13,7 +13,7 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useGetProductByIdQuery } from "../../src/store/services/api";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams, router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
 
@@ -50,101 +50,77 @@ export default function ProductDetailScreen() {
     }
   }, []);
 
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <StatusBar />
-        <SafeAreaView style={styles.safeArea}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => router.back()}
-            >
-              <Ionicons name="arrow-back" size={24} color="#333" />
-            </TouchableOpacity>
-            <ThemedText style={styles.headerTitle}>Ürün Detayı</ThemedText>
-            <View style={{ width: 40 }} />
-          </View>
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#6200ee" />
-          </View>
-        </SafeAreaView>
-      </View>
-    );
-  }
-
-  if (!product) {
-    return (
-      <View style={styles.container}>
-        <StatusBar />
-        <SafeAreaView style={styles.safeArea}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => router.back()}
-            >
-              <Ionicons name="arrow-back" size={24} color="#333" />
-            </TouchableOpacity>
-            <ThemedText style={styles.headerTitle}>Ürün Detayı</ThemedText>
-            <View style={{ width: 40 }} />
-          </View>
-          <ThemedView style={styles.errorContainer}>
-            <ThemedText style={styles.errorText}>Ürün bulunamadı</ThemedText>
-          </ThemedView>
-        </SafeAreaView>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <StatusBar />
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
-          <ThemedText style={styles.headerTitle}>Ürün Detayı</ThemedText>
-          <View style={{ width: 40 }} />
-        </View>
-        <ScrollView
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.imageContainer}>
-            <Image
-              source={getProductImage(product.name)}
-              style={styles.productImage}
-              resizeMode="cover"
-            />
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "#ffffff" },
+        }}
+      />
+      <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <Ionicons name="arrow-back" size={24} color="#333" />
+            </TouchableOpacity>
+            <ThemedText style={styles.headerTitle}>Ürün Detayı</ThemedText>
+            <View style={{ width: 40 }} />
           </View>
-          <ThemedView style={styles.contentContainer}>
-            <ThemedText style={styles.productName}>{product.name}</ThemedText>
-            <ThemedText style={styles.price}>{product.price1} TL</ThemedText>
 
-            {product.brand && (
-              <ThemedText style={styles.brand}>
-                Marka: {product.brand.name}
-              </ThemedText>
-            )}
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#6200ee" />
+            </View>
+          ) : !product ? (
+            <View style={styles.errorContainer}>
+              <ThemedText style={styles.errorText}>Ürün bulunamadı</ThemedText>
+            </View>
+          ) : (
+            <ScrollView
+              style={styles.scrollView}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.imageContainer}>
+                <Image
+                  source={getProductImage(product.name)}
+                  style={styles.productImage}
+                  resizeMode="cover"
+                />
+              </View>
+              <ThemedView style={styles.contentContainer}>
+                <ThemedText style={styles.productName}>
+                  {product.name}
+                </ThemedText>
+                <ThemedText style={styles.price}>
+                  {product.price1} TL
+                </ThemedText>
 
-            <ThemedText style={styles.stock}>
-              Stok Durumu:{" "}
-              {product.stockAmount > 0 ? "Stokta var" : "Stokta yok"}
-            </ThemedText>
+                {product.brand && (
+                  <ThemedText style={styles.brand}>
+                    Marka: {product.brand.name}
+                  </ThemedText>
+                )}
 
-            {product.details.map((detail) => (
-              <ThemedText key={detail.id} style={styles.description}>
-                {detail.details}
-              </ThemedText>
-            ))}
-          </ThemedView>
-        </ScrollView>
-      </SafeAreaView>
-    </View>
+                <ThemedText style={styles.stock}>
+                  Stok Durumu:{" "}
+                  {product.stockAmount > 0 ? "Stokta var" : "Stokta yok"}
+                </ThemedText>
+
+                {product.details.map((detail) => (
+                  <ThemedText key={detail.id} style={styles.description}>
+                    {detail.details}
+                  </ThemedText>
+                ))}
+              </ThemedView>
+            </ScrollView>
+          )}
+        </SafeAreaView>
+      </View>
+    </>
   );
 }
 
@@ -155,25 +131,20 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#ffffff",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 16,
-    backgroundColor: "#fff",
+    paddingVertical: 12,
+    backgroundColor: "#ffffff",
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
     color: "#1a1a1a",
     letterSpacing: 0.5,
