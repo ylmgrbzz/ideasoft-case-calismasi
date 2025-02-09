@@ -198,7 +198,10 @@ export default function CategoriesScreen() {
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity style={styles.addButton} onPress={() => {}}>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => router.push("/add-category")}
+            >
               <MaterialCommunityIcons name="plus" size={24} color="#ffffff" />
             </TouchableOpacity>
           ),
