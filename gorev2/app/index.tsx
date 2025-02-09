@@ -4,10 +4,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  StatusBar,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -58,48 +59,61 @@ export default function HomeScreen() {
   const backgroundColor = "#f8fafc";
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
-      <ThemedView style={[styles.container, { backgroundColor }]}>
-        <View style={styles.headerContainer}>
-          <View style={styles.header}>
-            <ThemedText type="title" style={styles.title}>
-              Yönetim Paneli
-            </ThemedText>
-            <ThemedText style={styles.subtitle}>
-              Ürün ve kategori yönetimini buradan yapabilirsiniz
-            </ThemedText>
-          </View>
-        </View>
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+          statusBarStyle: "dark",
+          statusBarTranslucent: true,
+        }}
+      />
+      <View style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+        <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
+          <ThemedView style={[styles.container, { backgroundColor }]}>
+            <View style={styles.headerContainer}>
+              <View style={styles.header}>
+                <ThemedText type="title" style={styles.title}>
+                  Yönetim Paneli
+                </ThemedText>
+                <ThemedText style={styles.subtitle}>
+                  Ürün ve kategori yönetimini buradan yapabilirsiniz
+                </ThemedText>
+              </View>
+            </View>
 
-        <View style={styles.content}>
-          <MenuCard
-            title="Ürünler"
-            description="Ürün listesi, ekleme, düzenleme ve silme işlemleri"
-            icon="package-variant-closed"
-            onPress={() => router.push("products")}
-          />
+            <View style={styles.content}>
+              <MenuCard
+                title="Ürünler"
+                description="Ürün listesi, ekleme, düzenleme ve silme işlemleri"
+                icon="package-variant-closed"
+                onPress={() => router.push("products")}
+              />
 
-          <MenuCard
-            title="Kategoriler"
-            description="Kategori listesi, ekleme, düzenleme ve silme işlemleri"
-            icon="shape"
-            onPress={() => router.push("categories")}
-          />
-        </View>
-      </ThemedView>
-    </SafeAreaView>
+              <MenuCard
+                title="Kategoriler"
+                description="Kategori listesi, ekleme, düzenleme ve silme işlemleri"
+                icon="shape"
+                onPress={() => router.push("categories")}
+              />
+            </View>
+          </ThemedView>
+        </SafeAreaView>
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f8fafc",
+  },
   safeArea: {
     flex: 1,
   },
-  container: {
-    flex: 1,
-  },
   headerContainer: {
-    paddingTop: Platform.OS === "ios" ? 30 : 50,
+    paddingTop: Platform.OS === "ios" ? 10 : 20,
     paddingBottom: 30,
     borderBottomWidth: 1,
     borderBottomColor: "#e2e8f0",
