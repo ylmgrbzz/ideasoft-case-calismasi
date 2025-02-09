@@ -4,39 +4,21 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useEffect } from "react";
-import {
-  useGetProductsQuery,
-  useGetProductByIdQuery,
-  useSearchProductsQuery,
-} from "../src/store/services/api";
+import { useSearchProductsQuery } from "../src/store/services/api";
 import { router } from "expo-router";
+import { useState } from "react";
 import { Product } from "../src/store/types/product";
 
-export default function HomeScreen() {
-  const { data: products, isLoading: productsLoading } = useGetProductsQuery({
-    limit: 20,
-    page: 1,
-  });
-  const { data: product, isLoading: productLoading } =
-    useGetProductByIdQuery(617);
-  const { data: searchResults, isLoading: searchLoading } =
-    useSearchProductsQuery({ q: "Zara", limit: 20, page: 1 });
-
-  useEffect(() => {
-    if (products) {
-      console.log("Ürünler:", JSON.stringify(products, null, 2));
-    }
-    if (product) {
-      console.log("Ürün Detayı:", JSON.stringify(product, null, 2));
-    }
-    if (searchResults) {
-      console.log("Arama Sonuçları:", JSON.stringify(searchResults, null, 2));
-    }
-  }, [products, product, searchResults]);
+export default function SearchScreen() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const { data: products, isLoading } = useSearchProductsQuery(
+    { q: searchQuery, limit: 20, page: 1 },
+    { skip: !searchQuery }
+  );
 
   const renderProduct = ({ item }: { item: Product }) => (
     <TouchableOpacity
@@ -57,23 +39,31 @@ export default function HomeScreen() {
     </TouchableOpacity>
   );
 
-  if (productsLoading || productLoading || searchLoading) {
-    return (
-      <ThemedView style={styles.container}>
-        <ActivityIndicator size="large" />
-      </ThemedView>
-    );
-  }
-
   return (
     <ThemedView style={styles.container}>
-      <FlatList
-        data={products}
-        renderItem={renderProduct}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={2}
-        contentContainerStyle={styles.productList}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Ürün ara..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
       />
+
+      {isLoading ? (
+        <ActivityIndicator style={styles.loading} size="large" />
+      ) : (
+        <FlatList
+          data={products}
+          renderItem={renderProduct}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
+          contentContainerStyle={styles.productList}
+          ListEmptyComponent={
+            searchQuery ? (
+              <ThemedText style={styles.noResults}>Sonuç bulunamadı</ThemedText>
+            ) : null
+          }
+        />
+      )}
     </ThemedView>
   );
 }
@@ -81,6 +71,17 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  searchInput: {
+    margin: 16,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    fontSize: 16,
+  },
+  loading: {
+    marginTop: 20,
   },
   productList: {
     padding: 10,
@@ -117,5 +118,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#e91e63",
+  },
+  noResults: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
   },
 });
