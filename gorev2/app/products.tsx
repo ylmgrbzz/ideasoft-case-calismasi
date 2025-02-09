@@ -18,11 +18,13 @@ import {
 } from "@/store/services/api";
 import { Product } from "@/types/product";
 import { useState, useCallback } from "react";
+import { useRouter } from "expo-router";
 
 export default function ProductsScreen() {
   const { data: products, isLoading, error, refetch } = useGetProductsQuery();
   const [deleteProduct] = useDeleteProductMutation();
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -142,6 +144,18 @@ export default function ProductsScreen() {
           headerStyle: {
             backgroundColor: "#ffffff",
           },
+          headerLeft: () => (
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <MaterialCommunityIcons
+                name="arrow-left"
+                size={24}
+                color="#1e293b"
+              />
+            </TouchableOpacity>
+          ),
           headerRight: () => (
             <TouchableOpacity style={styles.addButton} onPress={() => {}}>
               <MaterialCommunityIcons name="plus" size={24} color="#ffffff" />
@@ -344,5 +358,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     color: "#ffffff",
+  },
+  backButton: {
+    padding: 8,
   },
 });
